@@ -4,7 +4,7 @@
     https://nook.marlboro.edu/public/offices/registrar/gpa
 
 """
-VERSION = "v0.1 (alpha)"
+VERSION = "v0.2 (alpha)"
 WIDTH, HEIGHT = 320, 400
 
 # To set PID and Task Manager label/name
@@ -133,6 +133,9 @@ class Win(QWidget):
         # TODO:
         # Enable adding and deleting courses via enter key on keyboard,
 
+        # TODO:
+        # Save button
+
         # Add widgets to grid
         # grid.addWidget(add_course_button)
         # grid.addWidget(del_course_button)
@@ -147,7 +150,7 @@ class Win(QWidget):
         # Course List View
         self.courses_list_view = QListWidget()
         vlayout.addWidget(self.courses_list_view)
-        print(dir(self.courses_list_view))
+        # print(dir(self.courses_list_view))
 
         aclayout.addWidget(self.add_course_name_textbox)
         aclayout.addWidget(self.add_course_credits_textbox)
@@ -184,12 +187,15 @@ class Win(QWidget):
         # TODO:
         # Move cursor to self.add_course_name_textbox after every entry
 
+    # https://stackoverflow.com/questions/23835847/how-to-remove-item-from-qlistwidget
     @pyqtSlot()
     def clicked_del_course_button(self):
-        print("Test del course button!")
-
-        # TODO:
-        # Enable delete the selected course from the textview
+        # print("Test del course button!")
+        # print("{}".format(self.courses_list_view.currentItem()))
+        items = self.courses_list_view.selectedItems()
+        if items:
+            for item in items:
+                self.courses_list_view.takeItem(self.courses_list_view.row(item))
 
         # TODO:
         # Remove course from the GPA_Data data structure
