@@ -4,7 +4,7 @@
     https://nook.marlboro.edu/public/offices/registrar/gpa
 
 """
-VERSION = "v0.3 (alpha)"
+VERSION = "v0.4 (alpha)"
 WIDTH, HEIGHT = 500, 500
 
 # To set PID and Task Manager label/name
@@ -86,7 +86,7 @@ class Win(QWidget):
         super().__init__()
         self.title = title
         self.padd = 4
-        self.res = (320, 400)
+        self.res = (WIDTH, HEIGHT)
 
         # TODO:
         # Create instance of GPA_Data here
@@ -168,8 +168,31 @@ class Win(QWidget):
         self.courses_table = QTableWidget()
         self.courses_table.setColumnCount(3)
         self.courses_table.setHorizontalHeaderLabels(["Name:", "Credits:", "Grade:"])
+        self.courses_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.courses_table.verticalHeader().setVisible(False)
         vlayout.addWidget(self.courses_table)
-        print(dir(self.courses_table))
+
+        # TODO:
+        # Create method to update if data is updated
+
+        # Test Courses:
+        row_count = self.courses_table.rowCount()
+        self.courses_table.insertRow(row_count)
+        self.courses_table.setItem(row_count, 0, QTableWidgetItem("Test0"))
+        self.courses_table.setItem(row_count, 1, QTableWidgetItem("2"))
+        self.courses_table.setItem(row_count, 2, QTableWidgetItem("2.67"))
+
+        row_count = self.courses_table.rowCount()
+        self.courses_table.insertRow(row_count)
+        self.courses_table.setItem(row_count, 0, QTableWidgetItem("Test1"))
+        self.courses_table.setItem(row_count, 1, QTableWidgetItem("3"))
+        self.courses_table.setItem(row_count, 2, QTableWidgetItem("3.33"))
+
+        row_count = self.courses_table.rowCount()
+        self.courses_table.insertRow(row_count)
+        self.courses_table.setItem(row_count, 0, QTableWidgetItem("Test2"))
+        self.courses_table.setItem(row_count, 1, QTableWidgetItem("4"))
+        self.courses_table.setItem(row_count, 2, QTableWidgetItem("4.00"))
 
         # TODO:
         # Create labals for items
@@ -183,9 +206,12 @@ class Win(QWidget):
 
         self.show()
 
+    def update_gpa_label(self):
+        self.gpa_label.setText("GPA: {}".format("temp test"))
+
     @pyqtSlot()
     def clicked_add_course_button(self):
-        print("Test add course button!")
+        # print("Test add course button!")
         try:
             new_data = {"Name": str(self.add_course_name_textbox.text()),
                         "Credits": int(self.add_course_credits_textbox.text()),
@@ -199,7 +225,7 @@ class Win(QWidget):
         self.courses_table.setItem(row_count, 0, QTableWidgetItem(new_data["Name"]))
         self.courses_table.setItem(row_count, 1, QTableWidgetItem(str(new_data["Credits"])))
         self.courses_table.setItem(row_count, 2, QTableWidgetItem(str(new_data["Grade"])))
-        print("Test1")
+        # print("Test1")
 
         # TODO:
         # Add Course to data structure for storing data on courses
@@ -210,26 +236,41 @@ class Win(QWidget):
 
         # TODO:
         # Set GPA label to the current GPA value
-        self.gpa_label.setText("GPA: {}".format("temp test"))
-        print("Test2")
 
         self.add_course_name_textbox.setText("")
         self.add_course_credits_textbox.setText("")
         self.add_course_grade_textbox.setText("")
-        print("Test3")
 
-    # https://stackoverflow.com/questions/23835847/how-to-remove-item-from-qlistwidget
+        # Updates
+        self.update_gpa_label()
+
+    # https://stackoverflow.com/questions/14588479/retrieving-cell-data-from-a-selected-cell-in-a-tablewidget
     @pyqtSlot()
     def clicked_del_course_button(self):
-        # print("Test del course button!")
+        print("Test del course button!")
         # print("{}".format(self.courses_list_view.currentItem()))
-        items = self.courses_list_view.selectedItems()
-        if items:
-            for item in items:
-                self.courses_list_view.takeItem(self.courses_list_view.row(item))
+        # items = self.courses_list_view.selectedItems()
+        # if items:
+        #     for item in items:
+        #         self.courses_list_view.takeItem(self.courses_list_view.row(item))
+
+        # index_list = []
+        # for model_index in self.courses_table.selectionModel().selectedRows():
+        #     index = QtCore.QPersistentModelIndex(model_index)
+        #     index_list.append(index)
+
+        # for index in index_list:
+        #      self.model.removeRow(index.row())
+
+        # print(dir(self.courses_table))
+        index = self.courses_table.currentRow()
+        self.courses_table.removeRow(index)
 
         # TODO:
         # Remove course from the GPA_Data data structure
+
+        # Updates
+        self.update_gpa_label()
 
 def main():
     gpadata = GPA_Data()
