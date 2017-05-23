@@ -4,8 +4,8 @@
     https://nook.marlboro.edu/public/offices/registrar/gpa
 
 """
-VERSION = "v0.2 (alpha)"
-WIDTH, HEIGHT = 320, 400
+VERSION = "v0.3 (alpha)"
+WIDTH, HEIGHT = 500, 500
 
 # To set PID and Task Manager label/name
 import setproctitle
@@ -90,6 +90,11 @@ class Win(QWidget):
 
         # TODO:
         # Create instance of GPA_Data here
+        self.data = {"Name:": [],
+                     "Credits:": [],
+                     "Grade:": [],
+                    }
+        self.gpa = 0
 
         self.initUI()
 
@@ -123,6 +128,7 @@ class Win(QWidget):
         add_course_button.setToolTip("Press to add a course to calculate.")
         # add_course_button.move(HEIGHT//2, WIDTH//2)
         add_course_button.clicked.connect(self.clicked_add_course_button)
+        # print(dir(add_course_button))
 
         # # Remove Course Button
         del_course_button = QPushButton("Delete Course(s)", self)
@@ -148,9 +154,25 @@ class Win(QWidget):
         llayout.addWidget(self.gpa_label)
 
         # Course List View
-        self.courses_list_view = QListWidget()
-        vlayout.addWidget(self.courses_list_view)
+        # self.courses_list_view = QListWidget()
+        # vlayout.addWidget(self.courses_list_view)
+        # print()
         # print(dir(self.courses_list_view))
+        # print()
+
+        # Course Table View
+        # headers = ["Name:", "Credits:", "Grade:"]
+        # self.courses_table_view = QTableView()
+        # vlayout.addWidget(self.courses_table_view)
+        # print(dir(self.courses_table_view))
+        self.courses_table = QTableWidget()
+        self.courses_table.setColumnCount(3)
+        self.courses_table.setHorizontalHeaderLabels(["Name:", "Credits:", "Grade:"])
+        vlayout.addWidget(self.courses_table)
+        print(dir(self.courses_table))
+
+        # TODO:
+        # Create labals for items
 
         aclayout.addWidget(self.add_course_name_textbox)
         aclayout.addWidget(self.add_course_credits_textbox)
@@ -163,22 +185,21 @@ class Win(QWidget):
 
     @pyqtSlot()
     def clicked_add_course_button(self):
-        # print("Test add course button!")
-        course_name = self.add_course_name_textbox.text()
-        course_credits = self.add_course_credits_textbox.text()
-        course_grade = self.add_course_grade_textbox.text()
+        print("Test add course button!")
+        try:
+            new_data = {"Name": str(self.add_course_name_textbox.text()),
+                        "Credits": int(self.add_course_credits_textbox.text()),
+                        "Grade": float(self.add_course_grade_textbox.text())}
+        except ValueError:
+            return
 
-        # print("Course Name: {} Credits: {} Grade: {}".format(course_name,
-        #                                                      course_credits,
-        #                                                      course_grade))
+        row_count = self.courses_table.rowCount()
+        self.courses_table.insertRow(row_count)
 
-        self.add_course_name_textbox.setText("")
-        self.add_course_credits_textbox.setText("")
-        self.add_course_grade_textbox.setText("")
-
-        self.courses_list_view.addItem("{} {} {}".format(course_name,
-                                         course_credits,
-                                         course_grade))
+        self.courses_table.setItem(row_count, 0, QTableWidgetItem(new_data["Name"]))
+        self.courses_table.setItem(row_count, 1, QTableWidgetItem(str(new_data["Credits"])))
+        self.courses_table.setItem(row_count, 2, QTableWidgetItem(str(new_data["Grade"])))
+        print("Test1")
 
         # TODO:
         # Add Course to data structure for storing data on courses
@@ -186,6 +207,16 @@ class Win(QWidget):
 
         # TODO:
         # Move cursor to self.add_course_name_textbox after every entry
+
+        # TODO:
+        # Set GPA label to the current GPA value
+        self.gpa_label.setText("GPA: {}".format("temp test"))
+        print("Test2")
+
+        self.add_course_name_textbox.setText("")
+        self.add_course_credits_textbox.setText("")
+        self.add_course_grade_textbox.setText("")
+        print("Test3")
 
     # https://stackoverflow.com/questions/23835847/how-to-remove-item-from-qlistwidget
     @pyqtSlot()
@@ -199,12 +230,6 @@ class Win(QWidget):
 
         # TODO:
         # Remove course from the GPA_Data data structure
-
-        # TODO:
-        # Select the course just above the deleted course
-
-        # Show the window, ALWAYS LAST
-        # self.show()
 
 def main():
     gpadata = GPA_Data()
