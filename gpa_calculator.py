@@ -4,54 +4,43 @@
     https://nook.marlboro.edu/public/offices/registrar/gpa
 
 """
-VERSION = "v0.4 (alpha)"
-WIDTH, HEIGHT = 500, 500
+VERSION = "v0.5 (alpha)"
+WIDTH, HEIGHT = 400, 500
 
 # To set PID and Task Manager label/name
 import setproctitle
 setproctitle.setproctitle("GPA Calculator {}".format(VERSION))
 
 # For Qt5 GUI API
-# from PyQt5.QtWidgets import QApplication, QWidget, \
-#                             QAbstractScrollArea, QAbstractSlider, \
-#                             QButtonGroup, QPushButton, \
-#                             QBoxLayout, QGridLayout, \
-#                             QVBoxLayout, QHBoxLayout, \
-#                             QLineEdit, QListWidget, \
-#                             QListWidgetItem, QLabel
-
-# from PyQt5.QtGui import QIcon
-# from PyQt5.QtCore import pyqtSlot
-
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-
 import sys
-
-# Unused
-# from heapq import *
 
 # Class for storing data
 class GPA_Data:
     def __init__(self):
-        self.gpa = 0
-        self.qp = 0
-        #
+        self.quality_points = 0
+        self.credits = 0
+
+        # Numerical equivalents for grades
+        # TODO:
+        # Grades like P, WP, etc... should still be stored
+        # but evaluate in a way that does not effect
+        # GPA
         num_equiv = {"A+": 4.33, "A": 4.0, "A-": 3.67,
                      "B+": 3.33, "B": 3.0, "B-": 2.67,
                      "C+": 2.33, "C": 2.0, "C-": 1.67,
                      "D+": 1.33, "D": 1.0, "D-": 0.67,
-                     "F": 0.0,
-                     "a+": 4.33, "a": 4.0, "a-": 3.67,
-                     "b+": 3.33, "b": 3.0, "b-": 2.67,
-                     "c+": 2.33, "c": 2.0, "c-": 1.67,
-                     "d+": 1.33, "d": 1.0, "d-": 0.67,
-                     "f": 0.0,
-                     }
+                     "F": 0.0}
 
-        # GPA, Total Credits, Total Quality Points
-        self.courses = {"GPA": 0, "TC": 0, "TQP": 0}
+        # For storing courses data like so:
+        # {"Course Name 0": {"Credits": 0, "Grade": 0, "Quality Points": 0}
+        #  "Course Name 1": {"Credits": 0, "Grade": 0, "Quality Points": 0}
+        #  "Course Name 2": {"Credits": 0, "Grade": 0, "Quality Points": 0}}
+        self.courses = {}
+
+        self.gpa = 0
 
     def __str__(self):
         return str(self.courses)
@@ -60,8 +49,6 @@ class GPA_Data:
         if isinstance(name, str):
             if isinstance(grade, str):
                 self.courses[name] = grade
-            else:
-                print("Course grade must be an int, float, or a valid letter grade.")
         else:
             print("Course name must be a string.")
 
@@ -70,16 +57,19 @@ class GPA_Data:
     def add_grade(self, name, grade):
         if name in self.courses:
             self.courses[name] = grade
-        else:
-            print("Course must be a valid course (already added), if not, add it with the method\
-                   add_course().")
 
         self.update()
 
     def update(self):
-        for k, v in self.courses:
-            if k != ("GPA" or "TC" or "TQP"):
-                print(k, v)
+        pass
+        # TODO:
+        # Quality Points for each course is the course credits * the grade
+        #
+        # self.quality_points should be the sum of all quality points
+        #
+        # self.gpa should be the average calculated by dividing the total
+        # quality points by the total number of credits (self.credits)
+
 
 class Win(QWidget):
     def __init__(self, title="GPA Calculator {}".format(VERSION)):
@@ -141,13 +131,6 @@ class Win(QWidget):
 
         # TODO:
         # Save button
-
-        # Add widgets to grid
-        # grid.addWidget(add_course_button)
-        # grid.addWidget(del_course_button)
-
-        # hlayout.addWidget(add_course_button)
-        # hlayout.addWidget(del_course_button)
 
         self.gpa_label = QLabel("GPA:")
         self.gpa_label.setAlignment(Qt.AlignCenter)
@@ -211,7 +194,6 @@ class Win(QWidget):
 
     @pyqtSlot()
     def clicked_add_course_button(self):
-        # print("Test add course button!")
         try:
             new_data = {"Name": str(self.add_course_name_textbox.text()),
                         "Credits": int(self.add_course_credits_textbox.text()),
@@ -225,7 +207,6 @@ class Win(QWidget):
         self.courses_table.setItem(row_count, 0, QTableWidgetItem(new_data["Name"]))
         self.courses_table.setItem(row_count, 1, QTableWidgetItem(str(new_data["Credits"])))
         self.courses_table.setItem(row_count, 2, QTableWidgetItem(str(new_data["Grade"])))
-        # print("Test1")
 
         # TODO:
         # Add Course to data structure for storing data on courses
@@ -247,24 +228,11 @@ class Win(QWidget):
     # https://stackoverflow.com/questions/14588479/retrieving-cell-data-from-a-selected-cell-in-a-tablewidget
     @pyqtSlot()
     def clicked_del_course_button(self):
-        print("Test del course button!")
-        # print("{}".format(self.courses_list_view.currentItem()))
-        # items = self.courses_list_view.selectedItems()
-        # if items:
-        #     for item in items:
-        #         self.courses_list_view.takeItem(self.courses_list_view.row(item))
-
-        # index_list = []
-        # for model_index in self.courses_table.selectionModel().selectedRows():
-        #     index = QtCore.QPersistentModelIndex(model_index)
-        #     index_list.append(index)
-
-        # for index in index_list:
-        #      self.model.removeRow(index.row())
-
-        # print(dir(self.courses_table))
         index = self.courses_table.currentRow()
         self.courses_table.removeRow(index)
+
+        # TODO:
+        # Multiple selection
 
         # TODO:
         # Remove course from the GPA_Data data structure
@@ -273,111 +241,9 @@ class Win(QWidget):
         self.update_gpa_label()
 
 def main():
-    gpadata = GPA_Data()
-
     gui = Interface()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     ex = Win()
     sys.exit(app.exec_())
-
-# main()
-
-# def main():
-#     num_equiv = {"A+": 4.33, "A": 4.0, "A-": 3.67,
-#                  "B+": 3.33, "B": 3.0, "B-": 2.67,
-#                  "C+": 2.33, "C": 2.0, "C-": 1.67,
-#                  "D+": 1.33, "D": 1.0, "D-": 0.67,
-#                  "F": 0.0,
-#                  "a+": 4.33, "a": 4.0, "a-": 3.67,
-#                  "b+": 3.33, "b": 3.0, "b-": 2.67,
-#                  "c+": 2.33, "c": 2.0, "c-": 1.67,
-#                  "d+": 1.33, "d": 1.0, "d-": 0.67,
-#                  "f": 0.0,
-#                  }
-#     grades_list = []
-#     course_grades = {"GPA": 0}
-
-#     keep_adding = True
-#     while keep_adding:
-#         # Ask for input of course name and amount of credits
-#         ask_name = input("Course name: ")
-
-#         ask_credits = None
-#         while not isinstance(ask_credits, int):
-#             try:
-#                 ask_credits = input("Number of credits: ")
-#                 if isinstance(ask_credits, str):
-#                     ask_credits = int(ask_credits)
-#                 if isinstance(ask_credits, str):
-#                     ask_credits = float(ask_credits)
-#             except ValueError:
-#                 print("Please enter a number, not {}".format(type(ask_credits)))
-#                 pass
-
-#         if not ask_name:
-#             stop = input("Are you sure you would like to exit? (y/N): ")
-#             if stop.lower() == "y":
-#                 keep_adding = False
-#                 break
-#             if stop.lower() == "n":
-#                 keep_adding = True
-#                 continue
-
-#         # Ask for a grade for the course
-#         if ask_name:
-#             grade = input("Enter grade: ")
-
-#             if isinstance(grade, str):
-#                 try:
-#                     grade = int(grade)
-#                 except ValueError:
-#                     pass
-
-#             if isinstance(grade, str):
-#                 try:
-#                     grade = float(grade)
-#                 except ValueError:
-#                     pass
-
-#             if grade:
-#                 # course_grades[ask_name] = grade
-#                 if isinstance(grade, float) or isinstance(grade, int):
-#                     course_grades[ask_name] = {"Credits": ask_credits,
-#                                                "Grade": grade}
-#                 elif grade in num_equiv:
-#                     course_grades[ask_name] = {"Credits": ask_credits,
-#                                                "Grade": num_equiv[grade]}
-
-#             course_grades = calculate_gpa(course_grades)
-
-#         # print(course_grades)
-
-#     # gpa = sum(q_point) / len(q_point)
-#     # print(gpa)
-
-# def calculate_gpa(course_grades):
-#     # print("\n", course_grades, "\n")
-#     quality_points = {"Total Quality Points": 0, "Total Credits": 0}
-#     for k, v in course_grades.items():
-#         # print(course_grades)
-#         if k != "GPA":
-#             print(k, v)
-#             # course_grades["GPA"] += v
-#             quality_points[k] = course_grades[k]["Credits"] * \
-#                                 course_grades[k]["Grade"]
-
-#             quality_points["Total Quality Points"] += quality_points[k]
-#             quality_points["Total Credits"] += course_grades[k]["Credits"]
-
-#     course_grades["GPA"] = quality_points["Total Quality Points"] / \
-#                            quality_points["Total Credits"]
-
-#     # print("\n", course_grades, "\n")
-
-#     return course_grades
-
-
-# if __name__ == "__main__":
-#     main()
