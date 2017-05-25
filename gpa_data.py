@@ -8,6 +8,7 @@ class GPA_Data:
     def __init__(self):
         self.quality_points = 0
         self.credits = 0
+        self.blank_credits = 0
 
         # Numerical equivalents for grades
         # TODO:
@@ -53,6 +54,8 @@ class GPA_Data:
             self.courses[name] = {"Credits": credits,
                                   "Grade": grade,
                                   "Quality Points": qp}
+        if name not in self.courses:
+            raise TypeError
 
         self.update()
 
@@ -65,17 +68,17 @@ class GPA_Data:
         self.update()
 
     def update(self):
-        self.credits, self.quality_points = 0, 0
+        self.gpa, self.credits, self.blank_credits, self.quality_points = 0, 0, 0, 0
 
         for key, val in self.courses.items():
             for x in val:
-                if val[x] != None:
-                    # print(x, val[x])
+                if val["Grade"] != None and val[x] != None:
                     if x == "Credits":
                         self.credits += val[x]
-
                     if x == "Quality Points":
                         self.quality_points += val[x]
+                if x == "Grade" and val["Grade"] == None:
+                    self.blank_credits += val["Credits"]
 
         try:
             self.gpa = self.quality_points / self.credits
@@ -88,71 +91,3 @@ class GPA_Data:
                 pass
         except ZeroDivisionError:
             pass
-
-def main():
-    # Test so that only valid grades and numerical grades
-    # are added to the data structure
-    gpa_data = GPA_Data()
-    gpa_data.add_course("Test Grade: A", 1, "A")
-    gpa_data.add_course("Test Grade: B", 2, "B")
-    gpa_data.add_course("Test Grade: C", 3, "C")
-    gpa_data.add_course("Test Grade: 1.0", 3, 1.00)
-    gpa_data.add_course("Test Grade: 2", 3, 2)
-    gpa_data.add_course("Test Grade: 3.33", 3, 3.33)
-    gpa_data.add_course("Test Grade: foo", 3, "foo")
-    gpa_data.add_course("Test Grade: bar", 3, "bar")
-    gpa_data.add_course("Test Grade: I", 3, "I")
-    gpa_data.add_course("Test Grade: P", 3, "P")
-
-    print("GPA: {}".format(gpa_data.gpa))
-    print("QP : {}".format(gpa_data.quality_points))
-    print("C  : {}".format(gpa_data.credits))
-    for k, v in gpa_data.courses.items():
-        print(k, v)
-
-    # Test so that del course works and that
-    # empty course list evaluates to 0
-    gpa_data.del_course("Test Grade: A")
-    gpa_data.del_course("Test Grade: B")
-    gpa_data.del_course("Test Grade: C")
-    gpa_data.del_course("Test Grade: 1.0")
-    gpa_data.del_course("Test Grade: 2")
-    gpa_data.del_course("Test Grade: 3.33")
-    gpa_data.del_course("Test Grade: foo")
-    gpa_data.del_course("Test Grade: bar")
-    gpa_data.del_course("Test Grade: I")
-    gpa_data.del_course("Test Grade: P")
-
-    print("GPA: {}".format(gpa_data.gpa))
-    print("QP : {}".format(gpa_data.quality_points))
-    print("C  : {}".format(gpa_data.credits))
-    if gpa_data.courses:
-        for k, v in gpa_data.courses.items():
-            print(k, v)
-    elif not gpa_data.courses:
-        print("{}")
-
-    # Final test to confirm GPA was calculated correctly
-    from random import randint as ri
-    gpa_data.add_course("Test0 Random 3.0 Grade Course:", ri(1, 4), 3.0)
-    gpa_data.add_course("Test1 Random 3.0 Grade Course:", ri(1, 4), 3.0)
-    gpa_data.add_course("Test2 Random 3.0 Grade Course:", ri(1, 4), 3.0)
-    gpa_data.add_course("Test3 Random 3.0 Grade Course:", ri(1, 4), 3.0)
-    gpa_data.add_course("Test4 Random 3.0 Grade Course:", ri(1, 4), 3.0)
-    gpa_data.add_course("Test5 Random 3.0 Grade Course:", ri(1, 4), 3.0)
-    gpa_data.add_course("Test6 Random 3.0 Grade Course:", ri(1, 4), 3.0)
-    gpa_data.add_course("Test7 Random 3.0 Grade Course:", ri(1, 4), 3.0)
-    gpa_data.add_course("Test8 Random 3.0 Grade Course:", ri(1, 4), 3.0)
-    gpa_data.add_course("Test9 Random 3.0 Grade Course:", ri(1, 4), 3.0)
-
-    print("GPA: {}".format(gpa_data.gpa))
-    print("QP : {}".format(gpa_data.quality_points))
-    print("C  : {}".format(gpa_data.credits))
-    if gpa_data.courses:
-        for k, v in gpa_data.courses.items():
-            print(k, v)
-    elif not gpa_data.courses:
-        print("{}")
-
-if __name__ == "__main__":
-    main()
