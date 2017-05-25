@@ -81,7 +81,7 @@ class Win(QWidget):
         # print(dir(self.add_course_button))
 
         # # Remove Course Button
-        self.del_course_button = QPushButton("Delete Course(s)", self)
+        self.del_course_button = QPushButton("Delete Course", self)
         self.del_course_button.setToolTip("Press to remove the checked courses.")
         # self.del_course_button.move(HEIGHT//3, WIDTH//3)
         self.del_course_button.clicked.connect(self.clicked_del_course_button)
