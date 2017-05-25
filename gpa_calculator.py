@@ -216,7 +216,7 @@ class Win(QWidget):
         self.add_course_credits_textbox.setText("")
         self.add_course_grade_textbox.setText("")
 
-        print(self.gpa_data)
+        # print(self.gpa_data)
 
         # Updates
         self.update()
