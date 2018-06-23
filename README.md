@@ -14,6 +14,11 @@ with the convenience of a desktop application usable anywhere.
 + Qt C++ library
 + C++17
 
+### Contributing:
++ Please file any bug reports here, I would love to know of bugs that exist
++ Knowledge of C++ is a huge help
++ TIA!
+
 ### License:
 
 <a href="https://github.com/RomanSC/gpa-calculator/blob/master/LICENSE">https://github.com/RomanSC/gpa-calculator/blob/master/LICENSE</a>
