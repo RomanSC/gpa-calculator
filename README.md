@@ -17,7 +17,7 @@ with the convenience of a desktop application usable anywhere.
 ### Contributing:
 + Please file any bug reports here, I would love to know of bugs that exist
 + Knowledge of C++ is a huge help
-+ TIA!
++ TIA (Thanks in advance)!
 
 ### License:
 
